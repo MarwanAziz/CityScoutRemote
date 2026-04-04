@@ -1,3 +1,4 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -5,6 +6,22 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinSerialization)
 }
+
+fun loadCityScoutSecret(envName: String, propertyName: String): String {
+    System.getenv(envName)?.trim()?.takeIf { it.isNotEmpty() }?.let { return it }
+    val props = Properties()
+    val local = rootProject.file("local.properties")
+    if (local.exists()) {
+        local.reader().use { props.load(it) }
+    }
+    return props.getProperty(propertyName)?.trim().orEmpty()
+}
+
+fun escapeForBuildConfigField(value: String): String =
+    value.replace("\\", "\\\\").replace("\"", "\\\"")
+
+val cityscoutRapidApiKey = loadCityScoutSecret("CITYSCOUT_RAPIDAPI_KEY", "cityscout.rapidapi.key")
+val cityscoutWeatherApiKey = loadCityScoutSecret("CITYSCOUT_WEATHER_API_KEY", "cityscout.weather.key")
 
 kotlin {
     androidTarget {
@@ -50,11 +67,24 @@ kotlin {
 android {
     namespace = "net.marwanaziz.cityscoutremote.shared"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
+    buildFeatures {
+        buildConfig = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+        buildConfigField(
+            "String",
+            "RAPIDAPI_KEY",
+            "\"${escapeForBuildConfigField(cityscoutRapidApiKey)}\"",
+        )
+        buildConfigField(
+            "String",
+            "WEATHER_API_KEY",
+            "\"${escapeForBuildConfigField(cityscoutWeatherApiKey)}\"",
+        )
     }
 }

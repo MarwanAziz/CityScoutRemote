@@ -30,7 +30,7 @@ private fun weatherForecastErrorForHttpCode(code: Int): WeatherForecastError =
 
 private suspend fun HttpClient.requestWeatherForecast(locationQuery: String): HttpResponse =
     get(WeatherApiConfig.FORECAST_ENDPOINT) {
-        parameter("key", WeatherApiSecrets.API_KEY)
+        parameter("key", RemoteApiKeys.weatherApiKey)
         parameter("q", locationQuery)
         parameter("days", WeatherApiConfig.FORECAST_DAYS)
     }

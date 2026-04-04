@@ -80,7 +80,7 @@ class WeatherForecastTest {
         val result = performGetCityWeather(remoteTestHttpClient(engine), city)
         assertTrue(result.isSuccess)
         assertEquals("London", result.getOrNull()?.location?.name)
-        assertEquals(WeatherApiSecrets.API_KEY, capturedKey)
+        assertEquals(RemoteApiKeys.weatherApiKey, capturedKey)
         assertEquals("London", capturedQ)
         assertEquals(WeatherApiConfig.FORECAST_DAYS.toString(), capturedDays)
     }
