@@ -21,13 +21,24 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         commonMain.dependencies {
-            // put your Multiplatform dependencies here
+            implementation(libs.ktorClientCore)
+            implementation(libs.ktorClientNegotiation)
+            implementation(libs.ktorClientSerializationKotlinxJson)
         }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+        }
+
+        androidMain.dependencies {
+            implementation(libs.ktorCleintAndroid)
+        }
+
+        iosMain.dependencies {
+            implementation(libs.ktorCleintIos)
         }
     }
 }
