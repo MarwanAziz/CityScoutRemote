@@ -11,15 +11,16 @@ import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 
-private fun citySearchErrorForHttpCode(code: Int): CitySearchError = when (code) {
-    400 -> CitySearchError.BadRequest
-    401 -> CitySearchError.Unauthorized
-    403 -> CitySearchError.Forbidden
-    404 -> CitySearchError.NotFound
-    429 -> CitySearchError.RateLimited
-    in 500..599 -> CitySearchError.ServerError
-    else -> CitySearchError.HttpError
-}
+private fun citySearchErrorForHttpCode(code: Int): CitySearchError =
+    when (standardHttpFailureKindForCode(code)) {
+        StandardHttpFailureKind.BadRequest -> CitySearchError.BadRequest
+        StandardHttpFailureKind.Unauthorized -> CitySearchError.Unauthorized
+        StandardHttpFailureKind.Forbidden -> CitySearchError.Forbidden
+        StandardHttpFailureKind.NotFound -> CitySearchError.NotFound
+        StandardHttpFailureKind.RateLimited -> CitySearchError.RateLimited
+        StandardHttpFailureKind.ServerError -> CitySearchError.ServerError
+        StandardHttpFailureKind.UnexpectedStatus -> CitySearchError.HttpError
+    }
 
 private fun validatedCitySearchQuery(query: String): String? {
     val trimmed = query.trim()
@@ -53,15 +54,6 @@ private suspend fun citySearchResultForHttpResponse(response: HttpResponse): Res
     )
 }
 
-private fun Throwable.hasSerializationExceptionInChain(): Boolean {
-    var current: Throwable? = this
-    while (current != null) {
-        if (current is SerializationException) return true
-        current = current.cause
-    }
-    return false
-}
-
 private fun citySearchFailureForThrowable(e: Throwable): Result<List<City>> = when (e) {
     is SerializationException ->
         Result.failure(CitySearchException(CitySearchError.DeserializationError, e))
@@ -75,26 +67,19 @@ private fun citySearchFailureForThrowable(e: Throwable): Result<List<City>> = wh
     }
     is SocketTimeoutException ->
         Result.failure(CitySearchException(CitySearchError.Timeout))
-    else -> if (e.hasSerializationExceptionInChain()) {
+    else -> if (e.containsSerializationExceptionInChain()) {
         Result.failure(CitySearchException(CitySearchError.DeserializationError, e))
     } else {
         citySearchFailureForGenericException(e)
     }
 }
 
-private fun citySearchFailureForGenericException(e: Throwable): Result<List<City>> {
-    val message = e.message?.lowercase().orEmpty()
-    val simpleName = e::class.simpleName.orEmpty()
-    val isNetwork = message.contains("network") ||
-        message.contains("unreachable") ||
-        message.contains("connection") ||
-        simpleName.contains("IOException", ignoreCase = true)
-    return if (isNetwork) {
+private fun citySearchFailureForGenericException(e: Throwable): Result<List<City>> =
+    if (e.isLikelyNetworkFailure()) {
         Result.failure(CitySearchException(CitySearchError.NetworkError, e))
     } else {
         Result.failure(CitySearchException(CitySearchError.UnknownError, e))
     }
-}
 
 internal suspend fun performCitySearch(client: HttpClient, query: String): Result<List<City>> {
     val namePrefix = validatedCitySearchQuery(query)
