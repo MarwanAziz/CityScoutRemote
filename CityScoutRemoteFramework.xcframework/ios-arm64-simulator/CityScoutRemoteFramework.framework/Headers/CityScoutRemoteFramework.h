@@ -6,7 +6,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class CSRFAstro, CSRFAstroCompanion, CSRFCity, CSRFCityCompanion, CSRFCityScoutRemoteFactory, CSRFCitySearchError, CSRFCitySearchResponse, CSRFCitySearchResponseCompanion, CSRFCondition, CSRFConditionCompanion, CSRFCurrent, CSRFCurrentCompanion, CSRFDay, CSRFDayCompanion, CSRFForecast, CSRFForecastCompanion, CSRFForecastday, CSRFForecastdayCompanion, CSRFHour, CSRFHourCompanion, CSRFKotlinArray<T>, CSRFKotlinEnum<E>, CSRFKotlinEnumCompanion, CSRFKotlinException, CSRFKotlinIllegalStateException, CSRFKotlinNothing, CSRFKotlinRuntimeException, CSRFKotlinThrowable, CSRFKotlinx_serialization_coreSerialKind, CSRFKotlinx_serialization_coreSerializersModule, CSRFLinks, CSRFLinksCompanion, CSRFLocation, CSRFLocationCompanion, CSRFMetadata, CSRFMetadataCompanion, CSRFWeather, CSRFWeatherCompanion, CSRFWeatherForecastError;
+@class CSRFAstro, CSRFAstroCompanion, CSRFCity, CSRFCityCompanion, CSRFCityScoutRemoteError, CSRFCityScoutRemoteFactory, CSRFCityScoutRemoteResult<__covariant T>, CSRFCityScoutRemoteResultFailure, CSRFCityScoutRemoteResultSuccess<T>, CSRFCitySearchResponse, CSRFCitySearchResponseCompanion, CSRFCondition, CSRFConditionCompanion, CSRFCurrent, CSRFCurrentCompanion, CSRFDay, CSRFDayCompanion, CSRFForecast, CSRFForecastCompanion, CSRFForecastday, CSRFForecastdayCompanion, CSRFHour, CSRFHourCompanion, CSRFKotlinArray<T>, CSRFKotlinEnum<E>, CSRFKotlinEnumCompanion, CSRFKotlinException, CSRFKotlinIllegalStateException, CSRFKotlinNothing, CSRFKotlinRuntimeException, CSRFKotlinThrowable, CSRFKotlinx_serialization_coreSerialKind, CSRFKotlinx_serialization_coreSerializersModule, CSRFLinks, CSRFLinksCompanion, CSRFLocation, CSRFLocationCompanion, CSRFMetadata, CSRFMetadataCompanion, CSRFWeather, CSRFWeatherCompanion;
 
 @protocol CSRFCityScoutRemote, CSRFKotlinAnnotation, CSRFKotlinComparable, CSRFKotlinIterator, CSRFKotlinKAnnotatedElement, CSRFKotlinKClass, CSRFKotlinKClassifier, CSRFKotlinKDeclarationContainer, CSRFKotlinx_serialization_coreCompositeDecoder, CSRFKotlinx_serialization_coreCompositeEncoder, CSRFKotlinx_serialization_coreDecoder, CSRFKotlinx_serialization_coreDeserializationStrategy, CSRFKotlinx_serialization_coreEncoder, CSRFKotlinx_serialization_coreKSerializer, CSRFKotlinx_serialization_coreSerialDescriptor, CSRFKotlinx_serialization_coreSerializationStrategy, CSRFKotlinx_serialization_coreSerializersModuleCollector, CSRFPlatform;
 
@@ -225,13 +225,55 @@ __attribute__((swift_name("CityScoutRemote")))
  * @note This method converts instances of CancellationException to errors.
  * Other uncaught Kotlin exceptions are fatal.
 */
-- (void)getCityWeatherCity:(CSRFCity *)city completionHandler:(void (^)(id _Nullable_result, NSError * _Nullable))completionHandler __attribute__((swift_name("getCityWeather(city:completionHandler:)")));
+- (void)getCityWeatherCity:(CSRFCity *)city completionHandler:(void (^)(CSRFCityScoutRemoteResult<CSRFWeather *> * _Nullable, NSError * _Nullable))completionHandler __attribute__((swift_name("getCityWeather(city:completionHandler:)")));
 
 /**
  * @note This method converts instances of CancellationException to errors.
  * Other uncaught Kotlin exceptions are fatal.
 */
-- (void)searchForCityQuery:(NSString *)query completionHandler:(void (^)(id _Nullable_result, NSError * _Nullable))completionHandler __attribute__((swift_name("searchForCity(query:completionHandler:)")));
+- (void)searchForCityQuery:(NSString *)query completionHandler:(void (^)(CSRFCityScoutRemoteResult<NSArray<CSRFCity *> *> * _Nullable, NSError * _Nullable))completionHandler __attribute__((swift_name("searchForCity(query:completionHandler:)")));
+@end
+
+__attribute__((swift_name("KotlinComparable")))
+@protocol CSRFKotlinComparable
+@required
+- (int32_t)compareToOther:(id _Nullable)other __attribute__((swift_name("compareTo(other:)")));
+@end
+
+__attribute__((swift_name("KotlinEnum")))
+@interface CSRFKotlinEnum<E> : CSRFBase <CSRFKotlinComparable>
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer));
+@property (class, readonly, getter=companion) CSRFKotlinEnumCompanion *companion __attribute__((swift_name("companion")));
+- (int32_t)compareToOther:(E)other __attribute__((swift_name("compareTo(other:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) NSString *name __attribute__((swift_name("name")));
+@property (readonly) int32_t ordinal __attribute__((swift_name("ordinal")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("CityScoutRemoteError")))
+@interface CSRFCityScoutRemoteError : CSRFKotlinEnum<CSRFCityScoutRemoteError *>
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@property (class, readonly) CSRFCityScoutRemoteError *blankquery __attribute__((swift_name("blankquery")));
+@property (class, readonly) CSRFCityScoutRemoteError *missinglocationquery __attribute__((swift_name("missinglocationquery")));
+@property (class, readonly) CSRFCityScoutRemoteError *unauthorized __attribute__((swift_name("unauthorized")));
+@property (class, readonly) CSRFCityScoutRemoteError *forbidden __attribute__((swift_name("forbidden")));
+@property (class, readonly) CSRFCityScoutRemoteError *notfound __attribute__((swift_name("notfound")));
+@property (class, readonly) CSRFCityScoutRemoteError *ratelimited __attribute__((swift_name("ratelimited")));
+@property (class, readonly) CSRFCityScoutRemoteError *badrequest __attribute__((swift_name("badrequest")));
+@property (class, readonly) CSRFCityScoutRemoteError *servererror __attribute__((swift_name("servererror")));
+@property (class, readonly) CSRFCityScoutRemoteError *httperror __attribute__((swift_name("httperror")));
+@property (class, readonly) CSRFCityScoutRemoteError *deserializationerror __attribute__((swift_name("deserializationerror")));
+@property (class, readonly) CSRFCityScoutRemoteError *networkerror __attribute__((swift_name("networkerror")));
+@property (class, readonly) CSRFCityScoutRemoteError *timeout __attribute__((swift_name("timeout")));
+@property (class, readonly) CSRFCityScoutRemoteError *unknownerror __attribute__((swift_name("unknownerror")));
++ (CSRFKotlinArray<CSRFCityScoutRemoteError *> *)values __attribute__((swift_name("values()")));
+@property (class, readonly) NSArray<CSRFCityScoutRemoteError *> *entries __attribute__((swift_name("entries")));
+@property (readonly) NSString *description_ __attribute__((swift_name("description_")));
 @end
 
 
@@ -262,86 +304,42 @@ __attribute__((swift_name("CityScoutRemoteFactory")))
 - (id<CSRFCityScoutRemote>)create __attribute__((swift_name("create()")));
 @end
 
-__attribute__((swift_name("KotlinComparable")))
-@protocol CSRFKotlinComparable
-@required
-- (int32_t)compareToOther:(id _Nullable)other __attribute__((swift_name("compareTo(other:)")));
+
+/**
+ * Outcome of [CityScoutRemote] operations: [Success] with payload [T], or [Failure] with [CityScoutRemoteError].
+ */
+__attribute__((swift_name("CityScoutRemoteResult")))
+@interface CSRFCityScoutRemoteResult<__covariant T> : CSRFBase
+- (CSRFCityScoutRemoteResultFailure * _Nullable)failureOrNull __attribute__((swift_name("failureOrNull()")));
+- (T _Nullable)getOrNull __attribute__((swift_name("getOrNull()")));
+- (CSRFCityScoutRemoteResult<T> *)onFailureAction:(void (^)(CSRFCityScoutRemoteResultFailure *))action __attribute__((swift_name("onFailure(action:)")));
+- (CSRFCityScoutRemoteResult<T> *)onSuccessAction:(void (^)(T _Nullable))action __attribute__((swift_name("onSuccess(action:)")));
+@property (readonly) BOOL isFailure __attribute__((swift_name("isFailure")));
+@property (readonly) BOOL isSuccess __attribute__((swift_name("isSuccess")));
 @end
 
-__attribute__((swift_name("KotlinEnum")))
-@interface CSRFKotlinEnum<E> : CSRFBase <CSRFKotlinComparable>
-- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer));
-@property (class, readonly, getter=companion) CSRFKotlinEnumCompanion *companion __attribute__((swift_name("companion")));
-- (int32_t)compareToOther:(E)other __attribute__((swift_name("compareTo(other:)")));
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("CityScoutRemoteResultFailure")))
+@interface CSRFCityScoutRemoteResultFailure : CSRFCityScoutRemoteResult<CSRFKotlinNothing *>
+- (instancetype)initWithError:(CSRFCityScoutRemoteError *)error cause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(error:cause:)"))) __attribute__((objc_designated_initializer));
+- (CSRFCityScoutRemoteResultFailure *)doCopyError:(CSRFCityScoutRemoteError *)error cause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("doCopy(error:cause:)")));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
-@property (readonly) NSString *name __attribute__((swift_name("name")));
-@property (readonly) int32_t ordinal __attribute__((swift_name("ordinal")));
-@end
-
-__attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("CitySearchError")))
-@interface CSRFCitySearchError : CSRFKotlinEnum<CSRFCitySearchError *>
-+ (instancetype)alloc __attribute__((unavailable));
-+ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
-- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
-@property (class, readonly) CSRFCitySearchError *blankquery __attribute__((swift_name("blankquery")));
-@property (class, readonly) CSRFCitySearchError *unauthorized __attribute__((swift_name("unauthorized")));
-@property (class, readonly) CSRFCitySearchError *forbidden __attribute__((swift_name("forbidden")));
-@property (class, readonly) CSRFCitySearchError *notfound __attribute__((swift_name("notfound")));
-@property (class, readonly) CSRFCitySearchError *ratelimited __attribute__((swift_name("ratelimited")));
-@property (class, readonly) CSRFCitySearchError *badrequest __attribute__((swift_name("badrequest")));
-@property (class, readonly) CSRFCitySearchError *servererror __attribute__((swift_name("servererror")));
-@property (class, readonly) CSRFCitySearchError *httperror __attribute__((swift_name("httperror")));
-@property (class, readonly) CSRFCitySearchError *deserializationerror __attribute__((swift_name("deserializationerror")));
-@property (class, readonly) CSRFCitySearchError *networkerror __attribute__((swift_name("networkerror")));
-@property (class, readonly) CSRFCitySearchError *timeout __attribute__((swift_name("timeout")));
-@property (class, readonly) CSRFCitySearchError *unknownerror __attribute__((swift_name("unknownerror")));
-+ (CSRFKotlinArray<CSRFCitySearchError *> *)values __attribute__((swift_name("values()")));
-@property (class, readonly) NSArray<CSRFCitySearchError *> *entries __attribute__((swift_name("entries")));
-@property (readonly) NSString *description_ __attribute__((swift_name("description_")));
-@end
-
-__attribute__((swift_name("KotlinThrowable")))
-@interface CSRFKotlinThrowable : CSRFBase
-- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
-+ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
-- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer));
-- (instancetype)initWithCause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer));
-- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer));
-
-/**
- * @note annotations
- *   kotlin.experimental.ExperimentalNativeApi
-*/
-- (CSRFKotlinArray<NSString *> *)getStackTrace __attribute__((swift_name("getStackTrace()")));
-- (void)printStackTrace __attribute__((swift_name("printStackTrace()")));
-- (NSString *)description __attribute__((swift_name("description()")));
 @property (readonly) CSRFKotlinThrowable * _Nullable cause __attribute__((swift_name("cause")));
-@property (readonly) NSString * _Nullable message __attribute__((swift_name("message")));
-- (NSError *)asError __attribute__((swift_name("asError()")));
-@end
-
-__attribute__((swift_name("KotlinException")))
-@interface CSRFKotlinException : CSRFKotlinThrowable
-- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
-+ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
-- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer));
-- (instancetype)initWithCause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer));
-- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer));
+@property (readonly) NSString *description_ __attribute__((swift_name("description_")));
+@property (readonly) CSRFCityScoutRemoteError *error __attribute__((swift_name("error")));
 @end
 
 __attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("CitySearchException")))
-@interface CSRFCitySearchException : CSRFKotlinException
-- (instancetype)initWithError:(CSRFCitySearchError *)error cause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(error:cause:)"))) __attribute__((objc_designated_initializer));
-- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
-+ (instancetype)new __attribute__((unavailable));
-- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
-- (instancetype)initWithCause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
-- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
-@property (readonly) CSRFCitySearchError *error __attribute__((swift_name("error")));
+__attribute__((swift_name("CityScoutRemoteResultSuccess")))
+@interface CSRFCityScoutRemoteResultSuccess<T> : CSRFCityScoutRemoteResult<T>
+- (instancetype)initWithData:(T _Nullable)data __attribute__((swift_name("init(data:)"))) __attribute__((objc_designated_initializer));
+- (CSRFCityScoutRemoteResultSuccess<T> *)doCopyData:(T _Nullable)data __attribute__((swift_name("doCopy(data:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) T _Nullable data __attribute__((swift_name("data")));
 @end
 
 
@@ -763,41 +761,6 @@ __attribute__((swift_name("Weather.Companion")))
 @end
 
 __attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("WeatherForecastError")))
-@interface CSRFWeatherForecastError : CSRFKotlinEnum<CSRFWeatherForecastError *>
-+ (instancetype)alloc __attribute__((unavailable));
-+ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
-- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
-@property (class, readonly) CSRFWeatherForecastError *missinglocationquery __attribute__((swift_name("missinglocationquery")));
-@property (class, readonly) CSRFWeatherForecastError *unauthorized __attribute__((swift_name("unauthorized")));
-@property (class, readonly) CSRFWeatherForecastError *forbidden __attribute__((swift_name("forbidden")));
-@property (class, readonly) CSRFWeatherForecastError *notfound __attribute__((swift_name("notfound")));
-@property (class, readonly) CSRFWeatherForecastError *ratelimited __attribute__((swift_name("ratelimited")));
-@property (class, readonly) CSRFWeatherForecastError *badrequest __attribute__((swift_name("badrequest")));
-@property (class, readonly) CSRFWeatherForecastError *servererror __attribute__((swift_name("servererror")));
-@property (class, readonly) CSRFWeatherForecastError *httperror __attribute__((swift_name("httperror")));
-@property (class, readonly) CSRFWeatherForecastError *deserializationerror __attribute__((swift_name("deserializationerror")));
-@property (class, readonly) CSRFWeatherForecastError *networkerror __attribute__((swift_name("networkerror")));
-@property (class, readonly) CSRFWeatherForecastError *timeout __attribute__((swift_name("timeout")));
-@property (class, readonly) CSRFWeatherForecastError *unknownerror __attribute__((swift_name("unknownerror")));
-+ (CSRFKotlinArray<CSRFWeatherForecastError *> *)values __attribute__((swift_name("values()")));
-@property (class, readonly) NSArray<CSRFWeatherForecastError *> *entries __attribute__((swift_name("entries")));
-@property (readonly) NSString *description_ __attribute__((swift_name("description_")));
-@end
-
-__attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("WeatherForecastException")))
-@interface CSRFWeatherForecastException : CSRFKotlinException
-- (instancetype)initWithError:(CSRFWeatherForecastError *)error cause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(error:cause:)"))) __attribute__((objc_designated_initializer));
-- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
-+ (instancetype)new __attribute__((unavailable));
-- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
-- (instancetype)initWithCause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
-- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
-@property (readonly) CSRFWeatherForecastError *error __attribute__((swift_name("error")));
-@end
-
-__attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("Platform_iosKt")))
 @interface CSRFPlatform_iosKt : CSRFBase
 + (id<CSRFPlatform>)getPlatform __attribute__((swift_name("getPlatform()")));
@@ -820,6 +783,35 @@ __attribute__((swift_name("Kotlinx_serialization_coreDeserializationStrategy")))
 __attribute__((swift_name("Kotlinx_serialization_coreKSerializer")))
 @protocol CSRFKotlinx_serialization_coreKSerializer <CSRFKotlinx_serialization_coreSerializationStrategy, CSRFKotlinx_serialization_coreDeserializationStrategy>
 @required
+@end
+
+__attribute__((swift_name("KotlinThrowable")))
+@interface CSRFKotlinThrowable : CSRFBase
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithCause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer));
+
+/**
+ * @note annotations
+ *   kotlin.experimental.ExperimentalNativeApi
+*/
+- (CSRFKotlinArray<NSString *> *)getStackTrace __attribute__((swift_name("getStackTrace()")));
+- (void)printStackTrace __attribute__((swift_name("printStackTrace()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) CSRFKotlinThrowable * _Nullable cause __attribute__((swift_name("cause")));
+@property (readonly) NSString * _Nullable message __attribute__((swift_name("message")));
+- (NSError *)asError __attribute__((swift_name("asError()")));
+@end
+
+__attribute__((swift_name("KotlinException")))
+@interface CSRFKotlinException : CSRFKotlinThrowable
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (instancetype)initWithMessage:(NSString * _Nullable)message __attribute__((swift_name("init(message:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithCause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(cause:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithMessage:(NSString * _Nullable)message cause:(CSRFKotlinThrowable * _Nullable)cause __attribute__((swift_name("init(message:cause:)"))) __attribute__((objc_designated_initializer));
 @end
 
 __attribute__((swift_name("KotlinRuntimeException")))
@@ -873,6 +865,11 @@ __attribute__((swift_name("KotlinArray")))
 - (id<CSRFKotlinIterator>)iterator __attribute__((swift_name("iterator()")));
 - (void)setIndex:(int32_t)index value:(T _Nullable)value __attribute__((swift_name("set(index:value:)")));
 @property (readonly) int32_t size __attribute__((swift_name("size")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("KotlinNothing")))
+@interface CSRFKotlinNothing : CSRFBase
 @end
 
 __attribute__((swift_name("Kotlinx_serialization_coreEncoder")))
@@ -1127,11 +1124,6 @@ __attribute__((swift_name("Kotlinx_serialization_coreCompositeDecoder")))
 - (NSString *)decodeStringElementDescriptor:(id<CSRFKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("decodeStringElement(descriptor:index:)")));
 - (void)endStructureDescriptor:(id<CSRFKotlinx_serialization_coreSerialDescriptor>)descriptor __attribute__((swift_name("endStructure(descriptor:)")));
 @property (readonly) CSRFKotlinx_serialization_coreSerializersModule *serializersModule __attribute__((swift_name("serializersModule")));
-@end
-
-__attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("KotlinNothing")))
-@interface CSRFKotlinNothing : CSRFBase
 @end
 
 
