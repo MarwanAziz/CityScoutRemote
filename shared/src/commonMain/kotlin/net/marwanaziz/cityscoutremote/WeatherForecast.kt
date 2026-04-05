@@ -17,17 +17,6 @@ internal fun City.weatherLocationQuery(): String? =
         .mapNotNull { it?.trim()?.takeIf { t -> t.isNotEmpty() } }
         .firstOrNull()
 
-private fun weatherForecastErrorForHttpCode(code: Int): WeatherForecastError =
-    when (standardHttpFailureKindForCode(code)) {
-        StandardHttpFailureKind.BadRequest -> WeatherForecastError.BadRequest
-        StandardHttpFailureKind.Unauthorized -> WeatherForecastError.Unauthorized
-        StandardHttpFailureKind.Forbidden -> WeatherForecastError.Forbidden
-        StandardHttpFailureKind.NotFound -> WeatherForecastError.NotFound
-        StandardHttpFailureKind.RateLimited -> WeatherForecastError.RateLimited
-        StandardHttpFailureKind.ServerError -> WeatherForecastError.ServerError
-        StandardHttpFailureKind.UnexpectedStatus -> WeatherForecastError.HttpError
-    }
-
 private suspend fun HttpClient.requestWeatherForecast(locationQuery: String): HttpResponse =
     get(WeatherApiConfig.FORECAST_ENDPOINT) {
         parameter("key", RemoteApiKeys.weatherApiKey)
@@ -35,50 +24,48 @@ private suspend fun HttpClient.requestWeatherForecast(locationQuery: String): Ht
         parameter("days", WeatherApiConfig.FORECAST_DAYS)
     }
 
-private suspend fun weatherResultForHttpResponse(response: HttpResponse): Result<Weather> {
+private suspend fun weatherResultForHttpResponse(response: HttpResponse): CityScoutRemoteResult<Weather> {
     val code = response.status.value
     if (code in 200..299) {
         val payload: Weather = response.body()
-        return Result.success(payload)
+        return CityScoutRemoteResult.Success(payload)
     }
-    return Result.failure(
-        WeatherForecastException(
-            weatherForecastErrorForHttpCode(code),
-            IllegalStateException("HTTP $code"),
-        ),
+    return CityScoutRemoteResult.Failure(
+        cityScoutRemoteErrorForHttpStatus(code),
+        IllegalStateException("HTTP $code"),
     )
 }
 
-private fun weatherFailureForThrowable(e: Throwable): Result<Weather> = when (e) {
+private fun weatherFailureForThrowable(e: Throwable): CityScoutRemoteResult<Weather> = when (e) {
     is SerializationException ->
-        Result.failure(WeatherForecastException(WeatherForecastError.DeserializationError, e))
+        CityScoutRemoteResult.Failure(CityScoutRemoteError.DeserializationError, e)
     is ClientRequestException -> {
         val code = e.response.status.value
-        Result.failure(WeatherForecastException(weatherForecastErrorForHttpCode(code), e))
+        CityScoutRemoteResult.Failure(cityScoutRemoteErrorForHttpStatus(code), e)
     }
     is ServerResponseException -> {
         val code = e.response.status.value
-        Result.failure(WeatherForecastException(weatherForecastErrorForHttpCode(code), e))
+        CityScoutRemoteResult.Failure(cityScoutRemoteErrorForHttpStatus(code), e)
     }
     is SocketTimeoutException ->
-        Result.failure(WeatherForecastException(WeatherForecastError.Timeout))
+        CityScoutRemoteResult.Failure(CityScoutRemoteError.Timeout)
     else -> if (e.containsSerializationExceptionInChain()) {
-        Result.failure(WeatherForecastException(WeatherForecastError.DeserializationError, e))
+        CityScoutRemoteResult.Failure(CityScoutRemoteError.DeserializationError, e)
     } else {
         weatherFailureForGenericException(e)
     }
 }
 
-private fun weatherFailureForGenericException(e: Throwable): Result<Weather> =
+private fun weatherFailureForGenericException(e: Throwable): CityScoutRemoteResult<Weather> =
     if (e.isLikelyNetworkFailure()) {
-        Result.failure(WeatherForecastException(WeatherForecastError.NetworkError, e))
+        CityScoutRemoteResult.Failure(CityScoutRemoteError.NetworkError, e)
     } else {
-        Result.failure(WeatherForecastException(WeatherForecastError.UnknownError, e))
+        CityScoutRemoteResult.Failure(CityScoutRemoteError.UnknownError, e)
     }
 
-internal suspend fun performGetCityWeather(client: HttpClient, city: City): Result<Weather> {
+internal suspend fun performGetCityWeather(client: HttpClient, city: City): CityScoutRemoteResult<Weather> {
     val query = city.weatherLocationQuery()
-        ?: return Result.failure(WeatherForecastException(WeatherForecastError.MissingLocationQuery))
+        ?: return CityScoutRemoteResult.Failure(CityScoutRemoteError.MissingLocationQuery)
     return try {
         val response = client.requestWeatherForecast(query)
         weatherResultForHttpResponse(response)

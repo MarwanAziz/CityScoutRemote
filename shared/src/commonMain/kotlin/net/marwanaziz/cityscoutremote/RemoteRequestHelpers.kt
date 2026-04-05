@@ -39,3 +39,14 @@ internal fun standardHttpFailureKindForCode(code: Int): StandardHttpFailureKind 
     in 500..599 -> StandardHttpFailureKind.ServerError
     else -> StandardHttpFailureKind.UnexpectedStatus
 }
+
+internal fun cityScoutRemoteErrorForHttpStatus(code: Int): CityScoutRemoteError =
+    when (standardHttpFailureKindForCode(code)) {
+        StandardHttpFailureKind.BadRequest -> CityScoutRemoteError.BadRequest
+        StandardHttpFailureKind.Unauthorized -> CityScoutRemoteError.Unauthorized
+        StandardHttpFailureKind.Forbidden -> CityScoutRemoteError.Forbidden
+        StandardHttpFailureKind.NotFound -> CityScoutRemoteError.NotFound
+        StandardHttpFailureKind.RateLimited -> CityScoutRemoteError.RateLimited
+        StandardHttpFailureKind.ServerError -> CityScoutRemoteError.ServerError
+        StandardHttpFailureKind.UnexpectedStatus -> CityScoutRemoteError.HttpError
+    }

@@ -18,9 +18,9 @@ internal class CityScoutRemoteImp : CityScoutRemote {
         }
     }
 
-    override suspend fun searchForCity(query: String): Result<List<City>> =
+    override suspend fun searchForCity(query: String): CityScoutRemoteResult<List<City>> =
         performCitySearch(client, query)
 
-    override suspend fun getCityWeather(city: City): Result<Weather> =
+    override suspend fun getCityWeather(city: City): CityScoutRemoteResult<Weather> =
         performGetCityWeather(client, city)
 }

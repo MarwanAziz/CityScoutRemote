@@ -11,17 +11,6 @@ import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 
-private fun citySearchErrorForHttpCode(code: Int): CitySearchError =
-    when (standardHttpFailureKindForCode(code)) {
-        StandardHttpFailureKind.BadRequest -> CitySearchError.BadRequest
-        StandardHttpFailureKind.Unauthorized -> CitySearchError.Unauthorized
-        StandardHttpFailureKind.Forbidden -> CitySearchError.Forbidden
-        StandardHttpFailureKind.NotFound -> CitySearchError.NotFound
-        StandardHttpFailureKind.RateLimited -> CitySearchError.RateLimited
-        StandardHttpFailureKind.ServerError -> CitySearchError.ServerError
-        StandardHttpFailureKind.UnexpectedStatus -> CitySearchError.HttpError
-    }
-
 private fun validatedCitySearchQuery(query: String): String? {
     val trimmed = query.trim()
     return trimmed.takeIf { it.isNotEmpty() }
@@ -40,50 +29,48 @@ private suspend fun HttpClient.requestCitySearch(namePrefix: String): HttpRespon
     }
 }
 
-private suspend fun citySearchResultForHttpResponse(response: HttpResponse): Result<List<City>> {
+private suspend fun citySearchResultForHttpResponse(response: HttpResponse): CityScoutRemoteResult<List<City>> {
     val code = response.status.value
     if (code in 200..299) {
         val payload: CitySearchResponse = response.body()
-        return Result.success(payload.data.mapNotNull { it })
+        return CityScoutRemoteResult.Success(payload.data.mapNotNull { it })
     }
-    return Result.failure(
-        CitySearchException(
-            citySearchErrorForHttpCode(code),
-            IllegalStateException("HTTP $code"),
-        ),
+    return CityScoutRemoteResult.Failure(
+        cityScoutRemoteErrorForHttpStatus(code),
+        IllegalStateException("HTTP $code"),
     )
 }
 
-private fun citySearchFailureForThrowable(e: Throwable): Result<List<City>> = when (e) {
+private fun citySearchFailureForThrowable(e: Throwable): CityScoutRemoteResult<List<City>> = when (e) {
     is SerializationException ->
-        Result.failure(CitySearchException(CitySearchError.DeserializationError, e))
+        CityScoutRemoteResult.Failure(CityScoutRemoteError.DeserializationError, e)
     is ClientRequestException -> {
         val code = e.response.status.value
-        Result.failure(CitySearchException(citySearchErrorForHttpCode(code), e))
+        CityScoutRemoteResult.Failure(cityScoutRemoteErrorForHttpStatus(code), e)
     }
     is ServerResponseException -> {
         val code = e.response.status.value
-        Result.failure(CitySearchException(citySearchErrorForHttpCode(code), e))
+        CityScoutRemoteResult.Failure(cityScoutRemoteErrorForHttpStatus(code), e)
     }
     is SocketTimeoutException ->
-        Result.failure(CitySearchException(CitySearchError.Timeout))
+        CityScoutRemoteResult.Failure(CityScoutRemoteError.Timeout)
     else -> if (e.containsSerializationExceptionInChain()) {
-        Result.failure(CitySearchException(CitySearchError.DeserializationError, e))
+        CityScoutRemoteResult.Failure(CityScoutRemoteError.DeserializationError, e)
     } else {
         citySearchFailureForGenericException(e)
     }
 }
 
-private fun citySearchFailureForGenericException(e: Throwable): Result<List<City>> =
+private fun citySearchFailureForGenericException(e: Throwable): CityScoutRemoteResult<List<City>> =
     if (e.isLikelyNetworkFailure()) {
-        Result.failure(CitySearchException(CitySearchError.NetworkError, e))
+        CityScoutRemoteResult.Failure(CityScoutRemoteError.NetworkError, e)
     } else {
-        Result.failure(CitySearchException(CitySearchError.UnknownError, e))
+        CityScoutRemoteResult.Failure(CityScoutRemoteError.UnknownError, e)
     }
 
-internal suspend fun performCitySearch(client: HttpClient, query: String): Result<List<City>> {
+internal suspend fun performCitySearch(client: HttpClient, query: String): CityScoutRemoteResult<List<City>> {
     val namePrefix = validatedCitySearchQuery(query)
-        ?: return Result.failure(CitySearchException(CitySearchError.BlankQuery))
+        ?: return CityScoutRemoteResult.Failure(CityScoutRemoteError.BlankQuery)
     return try {
         val response = client.requestCitySearch(namePrefix)
         citySearchResultForHttpResponse(response)

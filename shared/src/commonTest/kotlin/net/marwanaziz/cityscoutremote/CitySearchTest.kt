@@ -6,7 +6,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.decodeFromString
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -14,11 +13,11 @@ import kotlin.test.assertTrue
 
 class CitySearchTest {
 
-    private fun assertFailureWithError(result: Result<List<City>>, expected: CitySearchError) {
+    private fun assertFailureWithError(result: CityScoutRemoteResult<List<City>>, expected: CityScoutRemoteError) {
         assertTrue(result.isFailure, "expected failure")
-        val ex = result.exceptionOrNull()
-        assertIs<CitySearchException>(ex)
-        assertEquals(expected, ex.error)
+        val failure = result.failureOrNull()
+        assertIs<CityScoutRemoteResult.Failure>(failure)
+        assertEquals(expected, failure.error)
     }
 
     @Test
@@ -34,14 +33,14 @@ class CitySearchTest {
     fun performCitySearch_blankQuery_returnsBlankQueryError() = runBlocking {
         val client = remoteTestHttpClient(MockEngine { respond("", HttpStatusCode.OK) })
         val result = performCitySearch(client, "")
-        assertFailureWithError(result, CitySearchError.BlankQuery)
+        assertFailureWithError(result, CityScoutRemoteError.BlankQuery)
     }
 
     @Test
     fun performCitySearch_whitespaceOnly_returnsBlankQueryError() = runBlocking {
         val client = remoteTestHttpClient(MockEngine { respond("", HttpStatusCode.OK) })
         val result = performCitySearch(client, "   \t  ")
-        assertFailureWithError(result, CitySearchError.BlankQuery)
+        assertFailureWithError(result, CityScoutRemoteError.BlankQuery)
     }
 
     @Test
@@ -102,21 +101,21 @@ class CitySearchTest {
     fun performCitySearch_unauthorized_returnsUnauthorized() = runBlocking {
         val engine = MockEngine { respond("", HttpStatusCode.Unauthorized) }
         val result = performCitySearch(remoteTestHttpClient(engine), "x")
-        assertFailureWithError(result, CitySearchError.Unauthorized)
+        assertFailureWithError(result, CityScoutRemoteError.Unauthorized)
     }
 
     @Test
     fun performCitySearch_notFound_returnsNotFound() = runBlocking {
         val engine = MockEngine { respond("", HttpStatusCode.NotFound) }
         val result = performCitySearch(remoteTestHttpClient(engine), "x")
-        assertFailureWithError(result, CitySearchError.NotFound)
+        assertFailureWithError(result, CityScoutRemoteError.NotFound)
     }
 
     @Test
     fun performCitySearch_serverError_returnsServerError() = runBlocking {
         val engine = MockEngine { respond("", HttpStatusCode.InternalServerError) }
         val result = performCitySearch(remoteTestHttpClient(engine), "x")
-        assertFailureWithError(result, CitySearchError.ServerError)
+        assertFailureWithError(result, CityScoutRemoteError.ServerError)
     }
 
     @Test
@@ -129,7 +128,7 @@ class CitySearchTest {
             )
         }
         val result = performCitySearch(remoteTestHttpClient(engine), "x")
-        assertFailureWithError(result, CitySearchError.DeserializationError)
+        assertFailureWithError(result, CityScoutRemoteError.DeserializationError)
     }
 
     @Test
@@ -142,6 +141,6 @@ class CitySearchTest {
             )
         }
         val result = performCitySearch(remoteTestHttpClient(engine), "x")
-        assertFailureWithError(result, CitySearchError.DeserializationError)
+        assertFailureWithError(result, CityScoutRemoteError.DeserializationError)
     }
 }
