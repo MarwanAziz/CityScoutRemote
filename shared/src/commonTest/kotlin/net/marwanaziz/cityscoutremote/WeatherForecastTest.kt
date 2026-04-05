@@ -15,11 +15,11 @@ import kotlin.test.assertTrue
 
 class WeatherForecastTest {
 
-    private fun assertFailureWithError(result: Result<Weather>, expected: WeatherForecastError) {
+    private fun assertFailureWithError(result: CityScoutRemoteResult<Weather>, expected: CityScoutRemoteError) {
         assertTrue(result.isFailure, "expected failure")
-        val ex = result.exceptionOrNull()
-        assertIs<WeatherForecastException>(ex)
-        assertEquals(expected, ex.error)
+        val failure = result.failureOrNull()
+        assertIs<CityScoutRemoteResult.Failure>(failure)
+        assertEquals(expected, failure.error)
     }
 
     @Test
@@ -89,14 +89,14 @@ class WeatherForecastTest {
     fun performGetCityWeather_missingLocation_returnsError() = runBlocking {
         val engine = MockEngine { respond("", HttpStatusCode.OK) }
         val result = performGetCityWeather(remoteTestHttpClient(engine), City())
-        assertFailureWithError(result, WeatherForecastError.MissingLocationQuery)
+        assertFailureWithError(result, CityScoutRemoteError.MissingLocationQuery)
     }
 
     @Test
     fun performGetCityWeather_unauthorized_returnsUnauthorized() = runBlocking {
         val engine = MockEngine { respond("", HttpStatusCode.Unauthorized) }
         val result = performGetCityWeather(remoteTestHttpClient(engine), City(name = "x"))
-        assertFailureWithError(result, WeatherForecastError.Unauthorized)
+        assertFailureWithError(result, CityScoutRemoteError.Unauthorized)
     }
 
     @Test
@@ -109,6 +109,6 @@ class WeatherForecastTest {
             )
         }
         val result = performGetCityWeather(remoteTestHttpClient(engine), City(name = "London"))
-        assertFailureWithError(result, WeatherForecastError.DeserializationError)
+        assertFailureWithError(result, CityScoutRemoteError.DeserializationError)
     }
 }
