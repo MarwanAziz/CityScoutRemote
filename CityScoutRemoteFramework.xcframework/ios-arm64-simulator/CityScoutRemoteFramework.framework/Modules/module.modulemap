@@ -1,0 +1,8 @@
+framework module "CityScoutRemoteFramework" {
+    umbrella header "CityScoutRemoteFramework.h"
+
+    export *
+    module * { export * }
+
+    use Foundation
+}

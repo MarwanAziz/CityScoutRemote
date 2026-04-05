@@ -1,5 +1,6 @@
 import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -29,14 +30,17 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
+    val xcframework = XCFramework("CityScoutRemoteFramework")
+
     listOf(
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "Shared"
+            baseName = "CityScoutRemoteFramework"
             isStatic = true
+            xcframework.add(this)
         }
     }
 
