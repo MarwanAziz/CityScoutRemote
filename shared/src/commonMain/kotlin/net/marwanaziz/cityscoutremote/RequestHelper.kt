@@ -1,8 +1,8 @@
 package net.marwanaziz.cityscoutremote
 
-internal class RequestHelper {
+internal class RequestHelper(private val rapidApiKey: String) {
     internal val citySearchHeaders = mapOf(
-        "x-rapidapi-key" to RemoteApiKeys.rapidApiKey,
+        "x-rapidapi-key" to rapidApiKey,
         "x-rapidapi-host" to "wft-geo-db.p.rapidapi.com",
     )
 

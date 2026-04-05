@@ -32,14 +32,14 @@ class CitySearchTest {
     @Test
     fun performCitySearch_blankQuery_returnsBlankQueryError() = runBlocking {
         val client = remoteTestHttpClient(MockEngine { respond("", HttpStatusCode.OK) })
-        val result = performCitySearch(client, "")
+        val result = performCitySearch(client, "", remoteTestRapidApiKey)
         assertFailureWithError(result, CityScoutRemoteError.BlankQuery)
     }
 
     @Test
     fun performCitySearch_whitespaceOnly_returnsBlankQueryError() = runBlocking {
         val client = remoteTestHttpClient(MockEngine { respond("", HttpStatusCode.OK) })
-        val result = performCitySearch(client, "   \t  ")
+        val result = performCitySearch(client, "   \t  ", remoteTestRapidApiKey)
         assertFailureWithError(result, CityScoutRemoteError.BlankQuery)
     }
 
@@ -70,7 +70,7 @@ class CitySearchTest {
                 headers = headersOf(HttpHeaders.ContentType, "application/json"),
             )
         }
-        val result = performCitySearch(remoteTestHttpClient(engine), "  Paris  ")
+        val result = performCitySearch(remoteTestHttpClient(engine), "  Paris  ", remoteTestRapidApiKey)
         assertTrue(result.isSuccess)
         val cities = result.getOrNull()!!
         assertEquals(1, cities.size)
@@ -91,7 +91,7 @@ class CitySearchTest {
                 headers = headersOf(HttpHeaders.ContentType, "application/json"),
             )
         }
-        val result = performCitySearch(remoteTestHttpClient(engine), "Lyon")
+        val result = performCitySearch(remoteTestHttpClient(engine), "Lyon", remoteTestRapidApiKey)
         assertTrue(result.isSuccess)
         assertEquals(1, result.getOrNull()!!.size)
         assertEquals("Lyon", result.getOrNull()!![0].name)
@@ -100,21 +100,21 @@ class CitySearchTest {
     @Test
     fun performCitySearch_unauthorized_returnsUnauthorized() = runBlocking {
         val engine = MockEngine { respond("", HttpStatusCode.Unauthorized) }
-        val result = performCitySearch(remoteTestHttpClient(engine), "x")
+        val result = performCitySearch(remoteTestHttpClient(engine), "x", remoteTestRapidApiKey)
         assertFailureWithError(result, CityScoutRemoteError.Unauthorized)
     }
 
     @Test
     fun performCitySearch_notFound_returnsNotFound() = runBlocking {
         val engine = MockEngine { respond("", HttpStatusCode.NotFound) }
-        val result = performCitySearch(remoteTestHttpClient(engine), "x")
+        val result = performCitySearch(remoteTestHttpClient(engine), "x", remoteTestRapidApiKey)
         assertFailureWithError(result, CityScoutRemoteError.NotFound)
     }
 
     @Test
     fun performCitySearch_serverError_returnsServerError() = runBlocking {
         val engine = MockEngine { respond("", HttpStatusCode.InternalServerError) }
-        val result = performCitySearch(remoteTestHttpClient(engine), "x")
+        val result = performCitySearch(remoteTestHttpClient(engine), "x", remoteTestRapidApiKey)
         assertFailureWithError(result, CityScoutRemoteError.ServerError)
     }
 
@@ -127,7 +127,7 @@ class CitySearchTest {
                 headers = headersOf(HttpHeaders.ContentType, "application/json"),
             )
         }
-        val result = performCitySearch(remoteTestHttpClient(engine), "x")
+        val result = performCitySearch(remoteTestHttpClient(engine), "x", remoteTestRapidApiKey)
         assertFailureWithError(result, CityScoutRemoteError.DeserializationError)
     }
 
@@ -140,7 +140,7 @@ class CitySearchTest {
                 headers = headersOf(HttpHeaders.ContentType, "application/json"),
             )
         }
-        val result = performCitySearch(remoteTestHttpClient(engine), "x")
+        val result = performCitySearch(remoteTestHttpClient(engine), "x", remoteTestRapidApiKey)
         assertFailureWithError(result, CityScoutRemoteError.DeserializationError)
     }
 }

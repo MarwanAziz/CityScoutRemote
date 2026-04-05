@@ -5,7 +5,9 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-internal class CityScoutRemoteImp : CityScoutRemote {
+internal class CityScoutRemoteImp(
+    private val apiKeys: EffectiveApiKeys,
+) : CityScoutRemote {
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -19,8 +21,8 @@ internal class CityScoutRemoteImp : CityScoutRemote {
     }
 
     override suspend fun searchForCity(query: String): CityScoutRemoteResult<List<City>> =
-        performCitySearch(client, query)
+        performCitySearch(client, query, apiKeys.rapidApiKey)
 
     override suspend fun getCityWeather(city: City): CityScoutRemoteResult<Weather> =
-        performGetCityWeather(client, city)
+        performGetCityWeather(client, city, apiKeys.weatherApiKey)
 }

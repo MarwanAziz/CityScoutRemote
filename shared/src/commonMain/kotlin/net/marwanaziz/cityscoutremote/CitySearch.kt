@@ -16,8 +16,8 @@ private fun validatedCitySearchQuery(query: String): String? {
     return trimmed.takeIf { it.isNotEmpty() }
 }
 
-private suspend fun HttpClient.requestCitySearch(namePrefix: String): HttpResponse {
-    val requestHelper = RequestHelper()
+private suspend fun HttpClient.requestCitySearch(namePrefix: String, rapidApiKey: String): HttpResponse {
+    val requestHelper = RequestHelper(rapidApiKey)
     return get(requestHelper.citySearchEndPoint) {
         parameter("namePrefix", namePrefix)
         parameter("maxPopulation", 10)
@@ -68,11 +68,15 @@ private fun citySearchFailureForGenericException(e: Throwable): CityScoutRemoteR
         CityScoutRemoteResult.Failure(CityScoutRemoteError.UnknownError, e)
     }
 
-internal suspend fun performCitySearch(client: HttpClient, query: String): CityScoutRemoteResult<List<City>> {
+internal suspend fun performCitySearch(
+    client: HttpClient,
+    query: String,
+    rapidApiKey: String,
+): CityScoutRemoteResult<List<City>> {
     val namePrefix = validatedCitySearchQuery(query)
         ?: return CityScoutRemoteResult.Failure(CityScoutRemoteError.BlankQuery)
     return try {
-        val response = client.requestCitySearch(namePrefix)
+        val response = client.requestCitySearch(namePrefix, rapidApiKey)
         citySearchResultForHttpResponse(response)
     } catch (e: CancellationException) {
         throw e

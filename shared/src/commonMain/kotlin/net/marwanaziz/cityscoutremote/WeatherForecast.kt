@@ -17,9 +17,9 @@ internal fun City.weatherLocationQuery(): String? =
         .mapNotNull { it?.trim()?.takeIf { t -> t.isNotEmpty() } }
         .firstOrNull()
 
-private suspend fun HttpClient.requestWeatherForecast(locationQuery: String): HttpResponse =
+private suspend fun HttpClient.requestWeatherForecast(locationQuery: String, weatherApiKey: String): HttpResponse =
     get(WeatherApiConfig.FORECAST_ENDPOINT) {
-        parameter("key", RemoteApiKeys.weatherApiKey)
+        parameter("key", weatherApiKey)
         parameter("q", locationQuery)
         parameter("days", WeatherApiConfig.FORECAST_DAYS)
     }
@@ -63,11 +63,15 @@ private fun weatherFailureForGenericException(e: Throwable): CityScoutRemoteResu
         CityScoutRemoteResult.Failure(CityScoutRemoteError.UnknownError, e)
     }
 
-internal suspend fun performGetCityWeather(client: HttpClient, city: City): CityScoutRemoteResult<Weather> {
+internal suspend fun performGetCityWeather(
+    client: HttpClient,
+    city: City,
+    weatherApiKey: String,
+): CityScoutRemoteResult<Weather> {
     val query = city.weatherLocationQuery()
         ?: return CityScoutRemoteResult.Failure(CityScoutRemoteError.MissingLocationQuery)
     return try {
-        val response = client.requestWeatherForecast(query)
+        val response = client.requestWeatherForecast(query, weatherApiKey)
         weatherResultForHttpResponse(response)
     } catch (e: CancellationException) {
         throw e

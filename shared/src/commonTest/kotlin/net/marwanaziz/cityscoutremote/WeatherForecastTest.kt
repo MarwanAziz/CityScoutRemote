@@ -77,10 +77,10 @@ class WeatherForecastTest {
             )
         }
         val city = City(name = "London")
-        val result = performGetCityWeather(remoteTestHttpClient(engine), city)
+        val result = performGetCityWeather(remoteTestHttpClient(engine), city, remoteTestWeatherApiKey)
         assertTrue(result.isSuccess)
         assertEquals("London", result.getOrNull()?.location?.name)
-        assertEquals(RemoteApiKeys.weatherApiKey, capturedKey)
+        assertEquals(remoteTestWeatherApiKey, capturedKey)
         assertEquals("London", capturedQ)
         assertEquals(WeatherApiConfig.FORECAST_DAYS.toString(), capturedDays)
     }
@@ -88,14 +88,14 @@ class WeatherForecastTest {
     @Test
     fun performGetCityWeather_missingLocation_returnsError() = runBlocking {
         val engine = MockEngine { respond("", HttpStatusCode.OK) }
-        val result = performGetCityWeather(remoteTestHttpClient(engine), City())
+        val result = performGetCityWeather(remoteTestHttpClient(engine), City(), remoteTestWeatherApiKey)
         assertFailureWithError(result, CityScoutRemoteError.MissingLocationQuery)
     }
 
     @Test
     fun performGetCityWeather_unauthorized_returnsUnauthorized() = runBlocking {
         val engine = MockEngine { respond("", HttpStatusCode.Unauthorized) }
-        val result = performGetCityWeather(remoteTestHttpClient(engine), City(name = "x"))
+        val result = performGetCityWeather(remoteTestHttpClient(engine), City(name = "x"), remoteTestWeatherApiKey)
         assertFailureWithError(result, CityScoutRemoteError.Unauthorized)
     }
 
@@ -108,7 +108,7 @@ class WeatherForecastTest {
                 headers = headersOf(HttpHeaders.ContentType, "application/json"),
             )
         }
-        val result = performGetCityWeather(remoteTestHttpClient(engine), City(name = "London"))
+        val result = performGetCityWeather(remoteTestHttpClient(engine), City(name = "London"), remoteTestWeatherApiKey)
         assertFailureWithError(result, CityScoutRemoteError.DeserializationError)
     }
 }
