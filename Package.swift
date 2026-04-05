@@ -10,7 +10,7 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "CityScoutRemoteFramework",
-            path: "./KPM.xcframework"
+            path: "./CityScoutRemoteFramework.xcframework"
         )
     ]
 )
