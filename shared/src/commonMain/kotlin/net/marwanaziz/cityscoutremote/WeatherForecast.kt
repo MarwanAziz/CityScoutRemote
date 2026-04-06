@@ -70,6 +70,9 @@ internal suspend fun performGetCityWeather(
 ): CityScoutRemoteResult<Weather> {
     val query = city.weatherLocationQuery()
         ?: return CityScoutRemoteResult.Failure(CityScoutRemoteError.MissingLocationQuery)
+    check(weatherApiKey.isNotBlank()) {
+        "Weather API key is missing or blank. Set CITYSCOUT_WEATHER_API_KEY / cityscout.weather.key or pass weatherApiKey in CityScoutRemoteApiKeys when creating CityScoutRemote."
+    }
     return try {
         val response = client.requestWeatherForecast(query, weatherApiKey)
         weatherResultForHttpResponse(response)

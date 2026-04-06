@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -90,6 +91,16 @@ class WeatherForecastTest {
         val engine = MockEngine { respond("", HttpStatusCode.OK) }
         val result = performGetCityWeather(remoteTestHttpClient(engine), City(), remoteTestWeatherApiKey)
         assertFailureWithError(result, CityScoutRemoteError.MissingLocationQuery)
+    }
+
+    @Test
+    fun performGetCityWeather_emptyWeatherApiKey_throws() {
+        runBlocking {
+            val engine = MockEngine { respond("", HttpStatusCode.OK) }
+            assertFailsWith<IllegalStateException> {
+                performGetCityWeather(remoteTestHttpClient(engine), City(name = "London"), "")
+            }
+        }
     }
 
     @Test

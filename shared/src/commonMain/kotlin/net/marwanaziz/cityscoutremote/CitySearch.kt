@@ -75,6 +75,9 @@ internal suspend fun performCitySearch(
 ): CityScoutRemoteResult<List<City>> {
     val namePrefix = validatedCitySearchQuery(query)
         ?: return CityScoutRemoteResult.Failure(CityScoutRemoteError.BlankQuery)
+    check(rapidApiKey.isNotBlank()) {
+        "RapidAPI key is missing or blank. Set CITYSCOUT_RAPIDAPI_KEY / cityscout.rapidapi.key or pass rapidApiKey in CityScoutRemoteApiKeys when creating CityScoutRemote."
+    }
     return try {
         val response = client.requestCitySearch(namePrefix, rapidApiKey)
         citySearchResultForHttpResponse(response)
