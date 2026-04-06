@@ -8,6 +8,7 @@ import io.ktor.http.headersOf
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
@@ -41,6 +42,16 @@ class CitySearchTest {
         val client = remoteTestHttpClient(MockEngine { respond("", HttpStatusCode.OK) })
         val result = performCitySearch(client, "   \t  ", remoteTestRapidApiKey)
         assertFailureWithError(result, CityScoutRemoteError.BlankQuery)
+    }
+
+    @Test
+    fun performCitySearch_emptyRapidApiKey_throws() {
+        runBlocking {
+            val client = remoteTestHttpClient(MockEngine { respond("", HttpStatusCode.OK) })
+            assertFailsWith<IllegalStateException> {
+                performCitySearch(client, "Paris", "")
+            }
+        }
     }
 
     @Test
