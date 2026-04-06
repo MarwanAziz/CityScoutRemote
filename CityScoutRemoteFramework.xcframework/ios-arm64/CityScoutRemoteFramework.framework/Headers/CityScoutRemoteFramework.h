@@ -6,7 +6,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class CSRFAstro, CSRFAstroCompanion, CSRFCity, CSRFCityCompanion, CSRFCityScoutRemoteError, CSRFCityScoutRemoteFactory, CSRFCityScoutRemoteResult<__covariant T>, CSRFCityScoutRemoteResultFailure, CSRFCityScoutRemoteResultSuccess<T>, CSRFCitySearchResponse, CSRFCitySearchResponseCompanion, CSRFCondition, CSRFConditionCompanion, CSRFCurrent, CSRFCurrentCompanion, CSRFDay, CSRFDayCompanion, CSRFForecast, CSRFForecastCompanion, CSRFForecastday, CSRFForecastdayCompanion, CSRFHour, CSRFHourCompanion, CSRFKotlinArray<T>, CSRFKotlinEnum<E>, CSRFKotlinEnumCompanion, CSRFKotlinException, CSRFKotlinIllegalStateException, CSRFKotlinNothing, CSRFKotlinRuntimeException, CSRFKotlinThrowable, CSRFKotlinx_serialization_coreSerialKind, CSRFKotlinx_serialization_coreSerializersModule, CSRFLinks, CSRFLinksCompanion, CSRFLocation, CSRFLocationCompanion, CSRFMetadata, CSRFMetadataCompanion, CSRFWeather, CSRFWeatherCompanion;
+@class CSRFAstro, CSRFAstroCompanion, CSRFCity, CSRFCityCompanion, CSRFCityScoutRemoteApiKeys, CSRFCityScoutRemoteError, CSRFCityScoutRemoteFactory, CSRFCityScoutRemoteResult<__covariant T>, CSRFCityScoutRemoteResultFailure, CSRFCityScoutRemoteResultSuccess<T>, CSRFCitySearchResponse, CSRFCitySearchResponseCompanion, CSRFCondition, CSRFConditionCompanion, CSRFCurrent, CSRFCurrentCompanion, CSRFDay, CSRFDayCompanion, CSRFForecast, CSRFForecastCompanion, CSRFForecastday, CSRFForecastdayCompanion, CSRFHour, CSRFHourCompanion, CSRFKotlinArray<T>, CSRFKotlinEnum<E>, CSRFKotlinEnumCompanion, CSRFKotlinException, CSRFKotlinIllegalStateException, CSRFKotlinNothing, CSRFKotlinRuntimeException, CSRFKotlinThrowable, CSRFKotlinx_serialization_coreSerialKind, CSRFKotlinx_serialization_coreSerializersModule, CSRFLinks, CSRFLinksCompanion, CSRFLocation, CSRFLocationCompanion, CSRFMetadata, CSRFMetadataCompanion, CSRFWeather, CSRFWeatherCompanion;
 
 @protocol CSRFCityScoutRemote, CSRFKotlinAnnotation, CSRFKotlinComparable, CSRFKotlinIterator, CSRFKotlinKAnnotatedElement, CSRFKotlinKClass, CSRFKotlinKClassifier, CSRFKotlinKDeclarationContainer, CSRFKotlinx_serialization_coreCompositeDecoder, CSRFKotlinx_serialization_coreCompositeEncoder, CSRFKotlinx_serialization_coreDecoder, CSRFKotlinx_serialization_coreDeserializationStrategy, CSRFKotlinx_serialization_coreEncoder, CSRFKotlinx_serialization_coreKSerializer, CSRFKotlinx_serialization_coreSerialDescriptor, CSRFKotlinx_serialization_coreSerializationStrategy, CSRFKotlinx_serialization_coreSerializersModuleCollector, CSRFPlatform;
 
@@ -234,6 +234,38 @@ __attribute__((swift_name("CityScoutRemote")))
 - (void)searchForCityQuery:(NSString *)query completionHandler:(void (^)(CSRFCityScoutRemoteResult<NSArray<CSRFCity *> *> * _Nullable, NSError * _Nullable))completionHandler __attribute__((swift_name("searchForCity(query:completionHandler:)")));
 @end
 
+
+/**
+ * Optional API keys passed to [CityScoutRemoteFactory.create]. When a value is non-null and
+ * non-blank, it is used if the corresponding [RemoteApiKeys] platform value is null or blank.
+ */
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("CityScoutRemoteApiKeys")))
+@interface CSRFCityScoutRemoteApiKeys : CSRFBase
+- (instancetype)initWithRapidApiKey:(NSString * _Nullable)rapidApiKey weatherApiKey:(NSString * _Nullable)weatherApiKey __attribute__((swift_name("init(rapidApiKey:weatherApiKey:)"))) __attribute__((objc_designated_initializer));
+- (CSRFCityScoutRemoteApiKeys *)doCopyRapidApiKey:(NSString * _Nullable)rapidApiKey weatherApiKey:(NSString * _Nullable)weatherApiKey __attribute__((swift_name("doCopy(rapidApiKey:weatherApiKey:)")));
+
+/**
+ * Optional API keys passed to [CityScoutRemoteFactory.create]. When a value is non-null and
+ * non-blank, it is used if the corresponding [RemoteApiKeys] platform value is null or blank.
+ */
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+
+/**
+ * Optional API keys passed to [CityScoutRemoteFactory.create]. When a value is non-null and
+ * non-blank, it is used if the corresponding [RemoteApiKeys] platform value is null or blank.
+ */
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+
+/**
+ * Optional API keys passed to [CityScoutRemoteFactory.create]. When a value is non-null and
+ * non-blank, it is used if the corresponding [RemoteApiKeys] platform value is null or blank.
+ */
+- (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) NSString * _Nullable rapidApiKey __attribute__((swift_name("rapidApiKey")));
+@property (readonly) NSString * _Nullable weatherApiKey __attribute__((swift_name("weatherApiKey")));
+@end
+
 __attribute__((swift_name("KotlinComparable")))
 @protocol CSRFKotlinComparable
 @required
@@ -281,7 +313,11 @@ __attribute__((swift_name("CityScoutRemoteError")))
  * Creates [CityScoutRemote] instances for apps that depend on the shared module.
  * Each call builds a new client with its own HTTP engine and JSON configuration.
  *
- * Configure API keys with environment variables `CITYSCOUT_RAPIDAPI_KEY` and
+ * Keys are resolved per service as: platform [RemoteApiKeys] value if non-null and non-blank,
+ * otherwise the matching non-blank value from [overrideKeys], otherwise an empty string
+ * (requests may fail until a key is configured).
+ *
+ * Configure platform keys with environment variables `CITYSCOUT_RAPIDAPI_KEY` and
  * `CITYSCOUT_WEATHER_API_KEY`, or for Android Gradle builds with `cityscout.rapidapi.key` /
  * `cityscout.weather.key` in the project root `local.properties`.
  */
@@ -294,14 +330,18 @@ __attribute__((swift_name("CityScoutRemoteFactory")))
  * Creates [CityScoutRemote] instances for apps that depend on the shared module.
  * Each call builds a new client with its own HTTP engine and JSON configuration.
  *
- * Configure API keys with environment variables `CITYSCOUT_RAPIDAPI_KEY` and
+ * Keys are resolved per service as: platform [RemoteApiKeys] value if non-null and non-blank,
+ * otherwise the matching non-blank value from [overrideKeys], otherwise an empty string
+ * (requests may fail until a key is configured).
+ *
+ * Configure platform keys with environment variables `CITYSCOUT_RAPIDAPI_KEY` and
  * `CITYSCOUT_WEATHER_API_KEY`, or for Android Gradle builds with `cityscout.rapidapi.key` /
  * `cityscout.weather.key` in the project root `local.properties`.
  */
 + (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
 + (instancetype)cityScoutRemoteFactory __attribute__((swift_name("init()")));
 @property (class, readonly, getter=shared) CSRFCityScoutRemoteFactory *shared __attribute__((swift_name("shared")));
-- (id<CSRFCityScoutRemote>)create __attribute__((swift_name("create()")));
+- (id<CSRFCityScoutRemote>)createOverrideKeys:(CSRFCityScoutRemoteApiKeys *)overrideKeys __attribute__((swift_name("create(overrideKeys:)")));
 @end
 
 
