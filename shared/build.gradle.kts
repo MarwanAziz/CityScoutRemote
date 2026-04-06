@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.mavenPublish)
 }
 
 fun loadCityScoutSecret(envName: String, propertyName: String): String {
