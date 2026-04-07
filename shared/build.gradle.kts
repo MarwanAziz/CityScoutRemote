@@ -33,6 +33,7 @@ kotlin {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
+        publishLibraryVariants("release")
     }
 
     val xcframework = XCFramework("CityScoutRemoteFramework")
