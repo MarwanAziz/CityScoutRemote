@@ -22,8 +22,7 @@ fun loadCityScoutSecret(envName: String, propertyName: String): String {
 fun escapeForBuildConfigField(value: String): String =
     value.replace("\\", "\\\\").replace("\"", "\\\"")
 
-// JitPack passes -Pgroup and -Pversion; fallbacks keep local builds valid.
-group = findProperty("group")?.toString() ?: "net.marwanaziz.cityscoutremote"
+group = "com.github.MarwanAziz"
 version = findProperty("version")?.toString() ?: "0.0.0-SNAPSHOT"
 
 val cityscoutRapidApiKey = loadCityScoutSecret("CITYSCOUT_RAPIDAPI_KEY", "cityscout.rapidapi.key")
@@ -95,5 +94,12 @@ android {
             "WEATHER_API_KEY",
             "\"${escapeForBuildConfigField(cityscoutWeatherApiKey)}\"",
         )
+    }
+}
+publishing {
+    publications {
+        withType<MavenPublication> {
+            artifactId = "CityScoutRemote"
+        }
     }
 }
