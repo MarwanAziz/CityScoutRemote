@@ -21,6 +21,7 @@ private suspend fun HttpClient.requestCitySearch(namePrefix: String, rapidApiKey
     return get(requestHelper.citySearchEndPoint) {
         parameter("namePrefix", namePrefix)
         parameter("offset", 0)
+        parameter("limit", 10)
         for (header in requestHelper.citySearchHeaders) {
             headers.append(header.key, header.value)
         }
