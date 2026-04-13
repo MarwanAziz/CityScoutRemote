@@ -11,11 +11,13 @@ import io.ktor.client.statement.HttpResponse
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.SerializationException
 
-/** WeatherAPI `q` uses a place name (e.g. `q=London`), not lat/lon. */
-internal fun City.weatherLocationQuery(): String? =
-    sequenceOf(city, name)
+/** WeatherAPI `q` uses lat/lon first and a place name (e.g. `q=London`), if not coordinates available*/
+internal fun City.weatherLocationQuery(): String? {
+    if (latitude != null && longitude != null) return "$latitude,$longitude"
+    return sequenceOf(city, name)
         .mapNotNull { it?.trim()?.takeIf { t -> t.isNotEmpty() } }
         .firstOrNull()
+}
 
 private suspend fun HttpClient.requestWeatherForecast(locationQuery: String, weatherApiKey: String): HttpResponse =
     get(WeatherApiConfig.FORECAST_ENDPOINT) {

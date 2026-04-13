@@ -20,9 +20,7 @@ private suspend fun HttpClient.requestCitySearch(namePrefix: String, rapidApiKey
     val requestHelper = RequestHelper(rapidApiKey)
     return get(requestHelper.citySearchEndPoint) {
         parameter("namePrefix", namePrefix)
-        parameter("maxPopulation", 10)
         parameter("offset", 0)
-        parameter("limit", 10)
         for (header in requestHelper.citySearchHeaders) {
             headers.append(header.key, header.value)
         }

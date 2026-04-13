@@ -34,10 +34,10 @@ class WeatherForecastTest {
 
     @Test
     fun weatherLocationQuery_ignoresCoordinates_usesNameOnly() {
-        val coordsOnly = City(latitude = 51.5, longitude = -0.12)
+        val coordsOnly = City(latitude = null, longitude = null)
         assertNull(coordsOnly.weatherLocationQuery())
         val named = City(latitude = 51.5, longitude = -0.12, name = "London")
-        assertEquals("London", named.weatherLocationQuery())
+        assertEquals("51.5,-0.12", named.weatherLocationQuery())
     }
 
     @Test
