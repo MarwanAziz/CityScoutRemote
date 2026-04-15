@@ -27,7 +27,8 @@ fun loadCityScoutSecret(envName: String, propertyName: String): String {
 fun escapeForBuildConfigField(value: String): String =
     value.replace("\\", "\\\\").replace("\"", "\\\"")
 
-group = "com.github.MarwanAziz"
+// JitPack / Maven coordinates (must match consumer projects and JitPack groupId).
+group = "com.github.MarwanAziz.CityScoutRemote"
 version = findProperty("version")?.toString() ?: "0.0.0-SNAPSHOT"
 
 // -----------------------------
@@ -136,6 +137,7 @@ android {
 // -----------------------------
 publishing {
     publications.withType<MavenPublication>().configureEach {
-        groupId = "com.github.MarwanAziz"
+        groupId = "com.github.MarwanAziz.CityScoutRemote"
+        artifactId = "CityScoutRemote"
     }
 }

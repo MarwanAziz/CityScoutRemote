@@ -4,4 +4,4 @@ jdk:
   - openjdk17
 
 install:
-  - ./gradlew :shared:publishToMavenLocal -Pjitpack=true -xtest -xlint --no-daemon --stacktrace
+  - ./gradlew :shared:publishToMavenLocal -Pjitpack=true -xtest -xlint --no-daemon --no-configuration-cache --stacktrace

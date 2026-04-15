@@ -28,7 +28,17 @@ dependencies {
 }
 ```
 
-From an external Gradle project, use a composite build or publish `shared` as an artifact and depend on your coordinates.
+From an external Gradle project, use a composite build or depend on a published build (e.g. [JitPack](https://jitpack.io)).
+
+**Maven coordinates** (see `shared/build.gradle.kts`): `com.github.MarwanAziz.CityScoutRemote:CityScoutRemote:<tag>`.
+
+```kotlin
+// build.gradle.kts
+repositories { maven { url = uri("https://jitpack.io") } }
+dependencies {
+    implementation("com.github.MarwanAziz.CityScoutRemote:CityScoutRemote:1.0.16")
+}
+```
 
 **Targets:** Android (library) and iOS (`iosArm64`, `iosSimulatorArm64`) with a static framework **`CityScoutRemoteFramework`** and an **XCFramework** task for distribution (configured in the **`shared`** module’s Gradle build).
 
