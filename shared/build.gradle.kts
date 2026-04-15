@@ -47,6 +47,7 @@ val cityscoutWeatherApiKey = loadCityScoutSecret(
 // 🚀 Kotlin Multiplatform
 // -----------------------------
 kotlin {
+    applyDefaultHierarchyTemplate()
 
     androidTarget {
         compilerOptions {
@@ -55,7 +56,6 @@ kotlin {
         publishLibraryVariants("release")
     }
 
-    // iOS targets
     val xcframework = XCFramework("CityScoutRemoteFramework")
 
     listOf(
@@ -70,19 +70,11 @@ kotlin {
     }
 
     sourceSets {
-
         val commonMain by getting {
             dependencies {
                 implementation(libs.ktorClientCore)
                 implementation(libs.ktorClientNegotiation)
                 implementation(libs.ktorClientSerializationKotlinxJson)
-            }
-        }
-
-        val commonTest by getting {
-            dependencies {
-                implementation(libs.kotlin.test)
-                implementation(libs.ktorClientMock)
             }
         }
 
@@ -92,21 +84,17 @@ kotlin {
             }
         }
 
-        // ✅ FIXED iOS setup
-        val iosMain by creating {
-            dependsOn(commonMain)
+        val iosMain by getting {
             dependencies {
                 implementation(libs.ktorCleintIos)
             }
         }
+    }
+    sourceSets.commonTest.dependencies {
+//        implementation(kotlin("test"))
+        implementation(libs.kotlin.test)
+        implementation(libs.ktorClientMock)
 
-        val iosArm64Main by getting {
-            dependsOn(iosMain)
-        }
-
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
-        }
     }
 }
 
@@ -148,7 +136,6 @@ android {
 // -----------------------------
 publishing {
     publications.withType<MavenPublication>().configureEach {
-        // ❗ DO NOT override artifactId
-        // Let Kotlin Multiplatform handle it correctly
+        groupId = "com.github.MarwanAziz"
     }
 }
